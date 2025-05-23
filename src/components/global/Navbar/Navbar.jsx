@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useState } from "react";
 
 const navItems = [
@@ -35,9 +36,9 @@ const Navbar = () => {
                             />
                         </svg>
                     </button>
-                    <a className="text-xl font-semibold" href="#">
+                    <Link className="text-xl font-semibold" href="/">
                         News Portal
-                    </a>
+                    </Link>
                 </div>
 
                 {/* Navbar Center (Desktop Menu) */}

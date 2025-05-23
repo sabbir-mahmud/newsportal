@@ -4,8 +4,6 @@ const Paginator = ({ page, setPage, count, length }) => {
     const getPaginationRange = () => {
         const range = [];
         const siblingsCount = window.innerWidth < 640 ? 0 : 1;
-        // If screen < 640px (sm breakpoint), show fewer siblings, else normal
-
         const totalPageNumbers = siblingsCount * 2 + 5;
 
         if (totalPages <= totalPageNumbers) {
@@ -64,7 +62,6 @@ const Paginator = ({ page, setPage, count, length }) => {
                     Prev
                 </button>
 
-                {/* On mobile (smaller than 640px), show only Prev, current page, Next */}
                 <div className="hidden sm:flex space-x-1">
                     {paginationRange.map((p, idx) => {
                         if (p === "left-ellipsis" || p === "right-ellipsis") {
@@ -94,7 +91,6 @@ const Paginator = ({ page, setPage, count, length }) => {
                     })}
                 </div>
 
-                {/* On mobile, show just current page number */}
                 <span className="sm:hidden px-3 py-1 rounded-md border bg-blue-600 text-white text-sm">
                     {page}
                 </span>
