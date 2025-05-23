@@ -1,4 +1,6 @@
 import Navbar from "@/components/global/Navbar/Navbar";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
 
@@ -14,6 +16,7 @@ export default function RootLayout({ children }) {
                 <StoreProvider>
                     <Navbar />
                     {children}
+                    <ToastContainer />
                 </StoreProvider>
             </body>
         </html>
