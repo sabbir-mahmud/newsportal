@@ -18,7 +18,15 @@ const authSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["auth"],
         }),
+        getUser: builder.query({
+            query: () => ({
+                url: "articles/api/v1/profiles/",
+                method: "GET",
+            }),
+            providesTags: ["auth"],
+        }),
     }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = authSlice;
+export const { useLoginMutation, useRegisterMutation, useGetUserQuery } =
+    authSlice;

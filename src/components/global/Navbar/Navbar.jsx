@@ -1,9 +1,11 @@
 "use client";
 import AuthModal from "@/components/modules/ui/Modals/AuthModal";
+import { useGetUserQuery } from "@/lib/api/authSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { openAuthModal } from "@/lib/slices/authModalSlice";
+import { setUserData } from "@/lib/slices/userSlice";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const navItems = [
     { label: "Politics", href: "#" },
@@ -16,6 +18,22 @@ const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const isAuthModalOpen = useAppSelector((state) => state.authModal.open);
     const dispatch = useAppDispatch();
+
+    const token = useAppSelector((state) => state.token?.access_token);
+    const user = useAppSelector((state) => state.user);
+
+    const { data: userData, isLoading: userLoading } = useGetUserQuery({
+        skip: !token,
+    });
+
+    useEffect(() => {
+        if (user && !userLoading) {
+            dispatch(setUserData(userData.results[0]));
+        }
+    }, [userData, userLoading, dispatch]);
+
+    console.log(user);
+
     const openLoginModal = () => {
         dispatch(openAuthModal({ type: "login" }));
     };
@@ -53,7 +71,6 @@ const Navbar = () => {
                             News Portal
                         </Link>
                     </div>
-
                     {/* Navbar Center (Desktop Menu) */}
                     <ul className="hidden lg:flex space-x-6 items-center">
                         {navItems.map((item, index) => (
@@ -67,25 +84,40 @@ const Navbar = () => {
                             </li>
                         ))}
                     </ul>
+                    {!user && (
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={openRegisterModal}
+                                className="hidden lg:inline-block bg-white text-gray-700 px-4 py-2 rounded-md hover:bg-gray-100"
+                            >
+                                Register
+                            </button>
+                            <button
+                                onClick={openLoginModal}
+                                className="bg-white text-gray-700 px-4 py-2 rounded-md hover:bg-gray-100"
+                            >
+                                Login
+                            </button>
+                        </div>
+                    )}
+                    {user && (
+                        <div className="flex items-center gap-2">
+                            <Link
+                                href="/profile"
+                                className="hidden lg:flex items-center gap-2 bg-white text-gray-700 px-4 py-2 rounded-md hover:bg-gray-100"
+                            >
+                                <img
+                                    src={`https://picsum.photos/40?random=${Math.floor(
+                                        Math.random() * 1000
+                                    )}`}
+                                    alt="User Avatar"
+                                    className="w-6 h-6 rounded-full object-cover"
+                                />
+                                <span>Profile</span>
+                            </Link>
+                        </div>
+                    )}
 
-                    {/* Navbar End */}
-                    <div className="flex items-center gap-2">
-                        {/* Show only on desktop */}
-                        <button
-                            onClick={openRegisterModal}
-                            className="hidden lg:inline-block bg-white text-gray-700 px-4 py-2 rounded-md hover:bg-gray-100"
-                        >
-                            Register
-                        </button>
-                        <button
-                            onClick={openLoginModal}
-                            className="bg-white text-gray-700 px-4 py-2 rounded-md hover:bg-gray-100"
-                        >
-                            Login
-                        </button>
-                    </div>
-
-                    {/* Mobile Menu Dropdown */}
                     {isOpen && (
                         <ul className="absolute top-full left-0 w-full bg-white text-gray-800 shadow-md rounded-md p-4 space-y-2 lg:hidden z-20">
                             {navItems.map((item, index) => (
