@@ -5,12 +5,16 @@ import {
     useGetCountriesQuery,
     useGetSourcesQuery,
 } from "@/lib/api/articleSlice";
+import { useUpdateProfileMutation } from "@/lib/api/authSlice";
 import { useAppSelector } from "@/lib/hooks";
 import { useMemo, useState } from "react";
+import { toast } from "react-toastify";
 import MultiSelect from "../MultiSelect";
 
-const PreferencesForm = () => {
+const PreferencesForm = ({ onClose }) => {
     const user = useAppSelector((state) => state.user);
+    const [mutation, { isLoading: isUpdating }] = useUpdateProfileMutation();
+
     const [bio, setBio] = useState(user?.bio || "");
     const [selectedSources, setSelectedSources] = useState(
         user?.source_preferences || []
@@ -61,7 +65,7 @@ const PreferencesForm = () => {
         [categories]
     );
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const payload = {
@@ -70,8 +74,17 @@ const PreferencesForm = () => {
             country_preferences: selectedCountries.map((c) => c.id),
             category_preferences: selectedCategories.map((c) => c.id),
         };
-
-        console.log("Submitted Payload:", payload);
+        const response = await mutation({
+            id: user.id,
+            data: payload,
+        });
+        if (response.data) {
+            toast.success("Preferences updated successfully");
+            onClose();
+        }
+        if (response.error) {
+            toast.error("Failed to update preferences");
+        }
     };
 
     return (
@@ -163,8 +176,9 @@ const PreferencesForm = () => {
             <button
                 type="submit"
                 className="px-4 py-2 bg-gray-600 text-white text-sm rounded-md hover:bg-gray-700"
+                disabled={isUpdating}
             >
-                Save Preferences
+                {isUpdating ? "Saving Preferences..." : "Save Preferences"}
             </button>
         </form>
     );
