@@ -32,8 +32,6 @@ const Navbar = () => {
         }
     }, [userData, userLoading, dispatch]);
 
-    console.log(user);
-
     const openLoginModal = () => {
         dispatch(openAuthModal({ type: "login" }));
     };
