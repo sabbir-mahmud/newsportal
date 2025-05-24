@@ -11,8 +11,35 @@ const articleSlice = apiSlice.injectEndpoints({
 
                 return { url, method: "GET" };
             },
+            providesTags: ["articles"],
+        }),
+        getCountries: builder.query({
+            query: () => ({
+                url: "core/api/v1/countries?page_size=100",
+                method: "GET",
+            }),
+            providesTags: ["countries"],
+        }),
+        getCategories: builder.query({
+            query: () => ({
+                url: "core/api/v1/categories?page_size=100",
+                method: "GET",
+            }),
+            providesTags: ["categories"],
+        }),
+        getSources: builder.query({
+            query: () => ({
+                url: "core/api/v1/sources?page_size=100",
+                method: "GET",
+            }),
+            providesTags: ["sources"],
         }),
     }),
 });
 
-export const { useGetArticlesQuery } = articleSlice;
+export const {
+    useGetArticlesQuery,
+    useGetSourcesQuery,
+    useGetCategoriesQuery,
+    useGetCountriesQuery,
+} = articleSlice;

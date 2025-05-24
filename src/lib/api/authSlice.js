@@ -23,7 +23,7 @@ const authSlice = apiSlice.injectEndpoints({
                 url: "articles/api/v1/profiles/",
                 method: "GET",
             }),
-            providesTags: ["auth"],
+            providesTags: ["profile"],
         }),
         updatePassword: builder.mutation({
             query: (data) => ({

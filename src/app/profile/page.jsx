@@ -1,16 +1,24 @@
 "use client";
 
+import Loading from "@/components/global/Loading/Loading";
 import PasswordChange from "@/components/modules/core/PasswordChange";
+import PreferencesModal from "@/components/modules/ui/Modals/PreferencesModal";
 import { useAppSelector } from "@/lib/hooks";
+import { useState } from "react";
 
 const Profile = () => {
     const profile = useAppSelector((state) => state.user);
+    const [preferencesModal, setPreferencesModal] = useState(false);
     const avatar = `https://i.pravatar.cc/150?img=${
         Math.floor(Math.random() * 70) + 1
     }`;
 
     if (!profile || !profile.user) {
-        return <div>Loading profile...</div>;
+        return (
+            <div className="mt-24 flex justify-center">
+                <Loading />
+            </div>
+        );
     }
 
     const {
@@ -20,10 +28,6 @@ const Profile = () => {
         country_preferences,
         category_preferences,
     } = profile;
-
-    const handleUpdateProfile = () => {
-        alert("Redirecting to profile update...");
-    };
 
     return (
         <div className="container mx-auto p-6">
@@ -52,13 +56,13 @@ const Profile = () => {
                             {bio}
                         </p>
                         <div className="flex space-x-3 mt-3">
-                            <button className="px-4 py-2 bg-gray-100 border text-sm rounded-md hover:bg-gray-200">
+                            <button
+                                className="px-4 py-2 bg-gray-100 border text-sm rounded-md hover:bg-gray-200"
+                                onClick={() => setPreferencesModal(true)}
+                            >
                                 Manage Preferences
                             </button>
-                            <button
-                                onClick={handleUpdateProfile}
-                                className="px-4 py-2 bg-gray-600 text-white text-sm rounded-md hover:bg-gray-700"
-                            >
+                            <button className="px-4 py-2 bg-gray-600 text-white text-sm rounded-md hover:bg-gray-700">
                                 Update Profile
                             </button>
                         </div>
@@ -102,6 +106,13 @@ const Profile = () => {
 
                 <PasswordChange />
             </div>
+
+            {preferencesModal && (
+                <PreferencesModal
+                    isOpen={preferencesModal}
+                    handleClose={() => setPreferencesModal(false)}
+                />
+            )}
         </div>
     );
 };
