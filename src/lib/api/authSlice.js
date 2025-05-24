@@ -25,6 +25,14 @@ const authSlice = apiSlice.injectEndpoints({
             }),
             providesTags: ["profile"],
         }),
+        updateUser: builder.mutation({
+            query: ({ id, data }) => ({
+                url: `auth/api/v1/user/${id}/`,
+                method: "PATCH",
+                body: data,
+            }),
+            invalidatesTags: ["profile"],
+        }),
         updateProfile: builder.mutation({
             query: ({ id, data }) => ({
                 url: `articles/api/v1/profiles/${id}/`,
@@ -50,4 +58,5 @@ export const {
     useGetUserQuery,
     useUpdatePasswordMutation,
     useUpdateProfileMutation,
+    useUpdateUserMutation,
 } = authSlice;

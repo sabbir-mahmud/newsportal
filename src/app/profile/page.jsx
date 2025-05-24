@@ -3,12 +3,14 @@
 import Loading from "@/components/global/Loading/Loading";
 import PasswordChange from "@/components/modules/core/PasswordChange";
 import PreferencesModal from "@/components/modules/ui/Modals/PreferencesModal";
+import UserModal from "@/components/modules/ui/Modals/UserModal";
 import { useAppSelector } from "@/lib/hooks";
 import { useState } from "react";
 
 const Profile = () => {
     const profile = useAppSelector((state) => state.user);
     const [preferencesModal, setPreferencesModal] = useState(false);
+    const [userUpdateModal, setUserUpdateModal] = useState(false);
     const avatar = `https://i.pravatar.cc/150?img=${
         Math.floor(Math.random() * 70) + 1
     }`;
@@ -62,7 +64,10 @@ const Profile = () => {
                             >
                                 Manage Preferences
                             </button>
-                            <button className="px-4 py-2 bg-gray-600 text-white text-sm rounded-md hover:bg-gray-700">
+                            <button
+                                className="px-4 py-2 bg-gray-600 text-white text-sm rounded-md hover:bg-gray-700"
+                                onClick={() => setUserUpdateModal(true)}
+                            >
                                 Update Profile
                             </button>
                         </div>
@@ -111,6 +116,13 @@ const Profile = () => {
                 <PreferencesModal
                     isOpen={preferencesModal}
                     handleClose={() => setPreferencesModal(false)}
+                />
+            )}
+
+            {userUpdateModal && (
+                <UserModal
+                    isOpen={userUpdateModal}
+                    handleClose={() => setUserUpdateModal(false)}
                 />
             )}
         </div>
