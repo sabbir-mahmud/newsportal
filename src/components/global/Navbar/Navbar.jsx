@@ -1,8 +1,10 @@
 "use client";
 import AuthModal from "@/components/modules/ui/Modals/AuthModal";
+import { useGetCategoriesQuery } from "@/lib/api/articleSlice";
 import { useGetUserQuery } from "@/lib/api/authSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { openAuthModal } from "@/lib/slices/authModalSlice";
+import { setCategory } from "@/lib/slices/filterSlice";
 import { setUserData } from "@/lib/slices/userSlice";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -25,6 +27,9 @@ const Navbar = () => {
     const { data: userData, isLoading: userLoading } = useGetUserQuery({
         skip: !token,
     });
+
+    const { data: categories, isLoading: categoriesLoading } =
+        useGetCategoriesQuery();
 
     useEffect(() => {
         if (userData && !userLoading) {
@@ -70,16 +75,35 @@ const Navbar = () => {
                     </div>
 
                     <ul className="hidden lg:flex space-x-6 items-center">
-                        {navItems.map((item, index) => (
-                            <li key={index}>
-                                <a
-                                    href={item.href}
-                                    className="hover:text-gray-300"
-                                >
-                                    {item.label}
-                                </a>
-                            </li>
-                        ))}
+                        {!categoriesLoading && categories?.results?.length > 0
+                            ? categories?.results
+                                  ?.slice(0, 5)
+                                  .map((category) => (
+                                      <li key={category.id}>
+                                          <button
+                                              className="hover:text-gray-300"
+                                              onClick={() =>
+                                                  dispatch(
+                                                      setCategory({
+                                                          category: category.id,
+                                                      })
+                                                  )
+                                              }
+                                          >
+                                              {category.name}
+                                          </button>
+                                      </li>
+                                  ))
+                            : navItems.map((item, index) => (
+                                  <li key={index}>
+                                      <a
+                                          href={item.href}
+                                          className="hover:text-gray-300"
+                                      >
+                                          {item.label}
+                                      </a>
+                                  </li>
+                              ))}
                     </ul>
                     {!user && (
                         <div className="flex items-center gap-2">
