@@ -27,7 +27,7 @@ const Navbar = () => {
     });
 
     useEffect(() => {
-        if (user && !userLoading) {
+        if (userData && !userLoading) {
             dispatch(setUserData(userData.results[0]));
         }
     }, [userData, userLoading, dispatch]);
@@ -44,7 +44,6 @@ const Navbar = () => {
         <>
             <div className="bg-gray-700">
                 <nav className="container mx-auto text-white shadow-sm py-3 px-4 flex justify-between items-center relative">
-                    {/* Navbar Start */}
                     <div className="flex items-center gap-4">
                         <button
                             className="lg:hidden focus:outline-none"
@@ -69,7 +68,7 @@ const Navbar = () => {
                             News Portal
                         </Link>
                     </div>
-                    {/* Navbar Center (Desktop Menu) */}
+
                     <ul className="hidden lg:flex space-x-6 items-center">
                         {navItems.map((item, index) => (
                             <li key={index}>

@@ -1,13 +1,16 @@
 "use client";
 
+import { Auth } from "@/components/global/Auth/Auth";
 import Loading from "@/components/global/Loading/Loading";
 import PasswordChange from "@/components/modules/core/PasswordChange";
 import PreferencesModal from "@/components/modules/ui/Modals/PreferencesModal";
 import UserModal from "@/components/modules/ui/Modals/UserModal";
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { userLogout } from "@/lib/slices/userSlice";
 import { useState } from "react";
 
 const Profile = () => {
+    const dispatch = useAppDispatch();
     const profile = useAppSelector((state) => state.user);
     const [preferencesModal, setPreferencesModal] = useState(false);
     const [userUpdateModal, setUserUpdateModal] = useState(false);
@@ -70,6 +73,12 @@ const Profile = () => {
                             >
                                 Update Profile
                             </button>
+                            <button
+                                className="px-4 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700"
+                                onClick={() => dispatch(userLogout())}
+                            >
+                                Log out
+                            </button>
                         </div>
                     </div>
 
@@ -129,4 +138,4 @@ const Profile = () => {
     );
 };
 
-export default Profile;
+export default Auth(Profile);

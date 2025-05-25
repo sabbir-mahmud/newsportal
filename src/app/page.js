@@ -3,6 +3,7 @@ import Loading from "@/components/global/Loading/Loading";
 import Paginator from "@/components/global/Paginator/Paginator";
 import Articles from "@/components/modules/ui/Articles/Articles";
 import { useGetArticlesQuery } from "@/lib/api/articleSlice";
+import { useAppSelector } from "@/lib/hooks";
 import { FileText } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -10,20 +11,29 @@ const Home = () => {
     const [page, setPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState("");
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+    const user = useAppSelector((state) => state.user);
 
     useEffect(() => {
         const handler = setTimeout(() => {
             setDebouncedSearchTerm(searchTerm);
-            setPage(1); // Reset page to 1 when search changes
+            setPage(1);
         }, 500);
 
         return () => clearTimeout(handler);
     }, [searchTerm]);
 
-    const { data: articlesData, isLoading } = useGetArticlesQuery({
+    const {
+        data: articlesData,
+        isLoading,
+        refetch,
+    } = useGetArticlesQuery({
         page,
         search: debouncedSearchTerm.trim(),
     });
+
+    useEffect(() => {
+        refetch();
+    }, [user, refetch]);
 
     if (isLoading) {
         return (
