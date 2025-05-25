@@ -3,10 +3,27 @@ import { apiSlice } from "./apiSlice";
 const articleSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getArticles: builder.query({
-            query: ({ page, search }) => {
+            query: ({ page, search, country, source, category }) => {
+                console.log("Fetching articles with params:", {
+                    page,
+                    search,
+                    country,
+                    source,
+                    category,
+                });
+
                 let url = `articles/api/v1/articles/?page=${page}`;
                 if (search) {
                     url += `&search=${search}`;
+                }
+                if (country) {
+                    url += `&country=${country}`;
+                }
+                if (source) {
+                    url += `&source=${source}`;
+                }
+                if (category) {
+                    url += `&category=${category}`;
                 }
 
                 return { url, method: "GET" };
