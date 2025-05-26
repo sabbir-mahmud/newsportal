@@ -7,6 +7,7 @@ import { openAuthModal } from "@/lib/slices/authModalSlice";
 import { setCategory } from "@/lib/slices/filterSlice";
 import { setUserData } from "@/lib/slices/userSlice";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const navItems = [
@@ -18,15 +19,19 @@ const navItems = [
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const isAuthModalOpen = useAppSelector((state) => state.authModal.open);
     const dispatch = useAppDispatch();
 
     const token = useAppSelector((state) => state.token?.access_token);
     const user = useAppSelector((state) => state.user);
+    const isAuthModalOpen = useAppSelector((state) => state.authModal.open);
+    const router = useRouter();
 
-    const { data: userData, isLoading: userLoading } = useGetUserQuery({
-        skip: !token,
-    });
+    const { data: userData, isLoading: userLoading } = useGetUserQuery(
+        undefined,
+        {
+            skip: !token,
+        }
+    );
 
     const { data: categories, isLoading: categoriesLoading } =
         useGetCategoriesQuery();
@@ -37,18 +42,15 @@ const Navbar = () => {
         }
     }, [userData, userLoading, dispatch]);
 
-    const openLoginModal = () => {
-        dispatch(openAuthModal({ type: "login" }));
-    };
-
-    const openRegisterModal = () => {
+    const openLoginModal = () => dispatch(openAuthModal({ type: "login" }));
+    const openRegisterModal = () =>
         dispatch(openAuthModal({ type: "register" }));
-    };
 
     return (
         <>
             <div className="bg-gray-700">
                 <nav className="container mx-auto text-white shadow-sm py-3 px-4 flex justify-between items-center relative">
+                    {/* Left - Logo + Mobile Menu */}
                     <div className="flex items-center gap-4">
                         <button
                             className="lg:hidden focus:outline-none"
@@ -76,24 +78,23 @@ const Navbar = () => {
 
                     <ul className="hidden lg:flex space-x-6 items-center">
                         {!categoriesLoading && categories?.results?.length > 0
-                            ? categories?.results
-                                  ?.slice(0, 5)
-                                  .map((category) => (
-                                      <li key={category.id}>
-                                          <button
-                                              className="hover:text-gray-300"
-                                              onClick={() =>
-                                                  dispatch(
-                                                      setCategory({
-                                                          category: category.id,
-                                                      })
-                                                  )
-                                              }
-                                          >
-                                              {category.name}
-                                          </button>
-                                      </li>
-                                  ))
+                            ? categories.results.slice(0, 5).map((category) => (
+                                  <li key={category.id}>
+                                      <button
+                                          className="hover:text-gray-300"
+                                          onClick={() => {
+                                              dispatch(
+                                                  setCategory({
+                                                      category: category.id,
+                                                  })
+                                              );
+                                              router.push("/");
+                                          }}
+                                      >
+                                          {category.name}
+                                      </button>
+                                  </li>
+                              ))
                             : navItems.map((item, index) => (
                                   <li key={index}>
                                       <a
@@ -105,56 +106,114 @@ const Navbar = () => {
                                   </li>
                               ))}
                     </ul>
-                    {!user && (
+
+                    {!userLoading && (
                         <div className="flex items-center gap-2">
-                            <button
-                                onClick={openRegisterModal}
-                                className="hidden lg:inline-block bg-white text-gray-700 px-4 py-2 rounded-md hover:bg-gray-100"
-                            >
-                                Register
-                            </button>
-                            <button
-                                onClick={openLoginModal}
-                                className="bg-white text-gray-700 px-4 py-2 rounded-md hover:bg-gray-100"
-                            >
-                                Login
-                            </button>
-                        </div>
-                    )}
-                    {user && (
-                        <div className="flex items-center gap-2">
-                            <Link
-                                href="/profile"
-                                className="hidden lg:flex items-center gap-2 bg-white text-gray-700 px-4 py-2 rounded-md hover:bg-gray-100"
-                            >
-                                <img
-                                    src={`https://picsum.photos/40?random=${Math.floor(
-                                        Math.random() * 1000
-                                    )}`}
-                                    alt="User Avatar"
-                                    className="w-6 h-6 rounded-full object-cover"
-                                />
-                                <span>Profile</span>
-                            </Link>
+                            {!user ? (
+                                <>
+                                    <button
+                                        onClick={openRegisterModal}
+                                        className="hidden lg:inline-block bg-white text-gray-700 px-4 py-2 rounded-md hover:bg-gray-100"
+                                    >
+                                        Register
+                                    </button>
+                                    <button
+                                        onClick={openLoginModal}
+                                        className="bg-white text-gray-700 px-4 py-2 rounded-md hover:bg-gray-100"
+                                    >
+                                        Login
+                                    </button>
+                                </>
+                            ) : (
+                                <Link
+                                    href="/profile"
+                                    className="hidden lg:flex items-center gap-2 bg-white text-gray-700 px-4 py-2 rounded-md hover:bg-gray-100"
+                                >
+                                    <img
+                                        src={`https://picsum.photos/40?random=${Math.floor(
+                                            Math.random() * 1000
+                                        )}`}
+                                        alt="User Avatar"
+                                        className="w-6 h-6 rounded-full object-cover"
+                                    />
+                                    <span>Profile</span>
+                                </Link>
+                            )}
                         </div>
                     )}
 
                     {isOpen && (
                         <ul className="absolute top-full left-0 w-full bg-white text-gray-800 shadow-md rounded-md p-4 space-y-2 lg:hidden z-20">
-                            {navItems.map((item, index) => (
-                                <li key={index}>
-                                    <a
-                                        href={item.href}
-                                        className="block px-4 py-2 hover:bg-gray-100 rounded-md"
+                            {categories?.results
+                                ?.slice(0, 5)
+                                .map((category) => (
+                                    <li key={category.id}>
+                                        <button
+                                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 rounded-md"
+                                            onClick={() => {
+                                                dispatch(
+                                                    setCategory({
+                                                        category: category.id,
+                                                    })
+                                                );
+                                                setIsOpen(false);
+                                                router.push("/");
+                                            }}
+                                        >
+                                            {category.name}
+                                        </button>
+                                    </li>
+                                ))}
+                            {!userLoading && !user && (
+                                <>
+                                    <li>
+                                        <button
+                                            onClick={() => {
+                                                openLoginModal();
+                                                setIsOpen(false);
+                                            }}
+                                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 rounded-md"
+                                        >
+                                            Login
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button
+                                            onClick={() => {
+                                                openRegisterModal();
+                                                setIsOpen(false);
+                                            }}
+                                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 rounded-md"
+                                        >
+                                            Register
+                                        </button>
+                                    </li>
+                                </>
+                            )}
+                            {!userLoading && user && (
+                                <li>
+                                    <Link
+                                        href="/profile"
+                                        className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-md"
+                                        onClick={() => setIsOpen(false)}
                                     >
-                                        {item.label}
-                                    </a>
+                                        <img
+                                            src={`https://picsum.photos/40?random=${Math.floor(
+                                                Math.random() * 1000
+                                            )}`}
+                                            alt="User Avatar"
+                                            className="w-6 h-6 rounded-full object-cover"
+                                        />
+                                        <span>Profile</span>
+                                    </Link>
                                 </li>
-                            ))}
+                            )}
                         </ul>
                     )}
                 </nav>
             </div>
+
+            {/* Auth Modal */}
             {isAuthModalOpen && <AuthModal />}
         </>
     );

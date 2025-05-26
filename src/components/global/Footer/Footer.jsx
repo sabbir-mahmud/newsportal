@@ -10,10 +10,12 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setCategory, setCountry, setSource } from "@/lib/slices/filterSlice";
 import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const Footer = () => {
     const dispatch = useAppDispatch();
     const user = useAppSelector((state) => state.user);
+    const router = useRouter();
 
     const { data: sources, isLoading: sourcesLoading } = useGetSourcesQuery({
         skip: !user,
@@ -41,13 +43,14 @@ const Footer = () => {
                             sources.results.slice(0, 9).map((source) => (
                                 <li key={source.id}>
                                     <button
-                                        onClick={() =>
+                                        onClick={() => {
                                             dispatch(
                                                 setSource({
                                                     source: source.id || null,
                                                 })
-                                            )
-                                        }
+                                            );
+                                            router.push("/");
+                                        }}
                                         className="hover:underline transition duration-200"
                                     >
                                         {source.name}
@@ -70,14 +73,15 @@ const Footer = () => {
                             categories.results.slice(0, 7).map((category) => (
                                 <li key={category.id}>
                                     <button
-                                        onClick={() =>
+                                        onClick={() => {
                                             dispatch(
                                                 setCategory({
                                                     category:
                                                         category.id || null,
                                                 })
-                                            )
-                                        }
+                                            );
+                                            router.push("/");
+                                        }}
                                         className="hover:underline transition duration-200"
                                     >
                                         {category.name}
@@ -99,13 +103,14 @@ const Footer = () => {
                             countries.results.slice(0, 10).map((country) => (
                                 <li key={country.code}>
                                     <button
-                                        onClick={() =>
+                                        onClick={() => {
                                             dispatch(
                                                 setCountry({
                                                     country: country?.id,
                                                 })
-                                            )
-                                        }
+                                            );
+                                            router.push("/");
+                                        }}
                                         className="hover:underline transition duration-200"
                                     >
                                         {country.name}
